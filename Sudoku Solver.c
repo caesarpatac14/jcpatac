@@ -2,14 +2,14 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
-// #include <math.h>
+#include <math.h>
 
 int system (const char* command);
 
-// int boardSize;
-// int subBoard;
+int boardSize;
+int subBoard;
 // Stores entries for sudoku
-int table[9][9];
+int table[25][25];
 
 void solveSudoku(int row, int column);
 
@@ -24,17 +24,42 @@ void solveSudoku(int row, int column);
 //     return count;
 // }
 
+int AreEqual(char str1[], char str2[]) {  // Checks if two strings are equal
+  if (strlen(str1) != strlen(str2)) {
+    return 0;
+  }
+  int i;
+  for (i = 0; str1[i] != '\0'; i++) {
+    if (str1[i] != str2[i]) {
+      return 0;
+    }
+  }
+  return 1;
+}
+
 void start() {
-    // subBoard = (sqrt(boardSize));
     char name[20];
-    // int size;
-    // printf("Enter Sudoku Board Size:\n");
-    // scanf("%d", &size);
-    //boardSize = size;
-    int grid[9][9];
-    printf("Enter File Name: ");
+    char size[1];
+    int sizes;
+    printf("Sudoku Board Sizes:\na. 1\nb. 4\nc. 9\nd. 16\ne. 25\n\nEnter letter: ");
+    scanf("%s", size);
+    if (AreEqual(size, "a")) {
+        sizes = 1;
+    }else if (AreEqual(size, "b")) {
+        sizes = 4;
+    }else if (AreEqual(size, "c")) {
+        sizes = 9;
+    }else if (AreEqual(size, "d")) {
+        sizes = 16;
+    }else if (AreEqual(size, "e")) {
+        sizes = 25;
+    }
+    boardSize = sizes;
+    int grid[25][25];
+    printf("\nEnter File Name: ");
     scanf("%s", name);
     FILE* fp = fopen(name, "r");
+    subBoard = (sqrt(boardSize));
 
     if (fp == NULL) {
         // char save[20];
@@ -47,8 +72,8 @@ void start() {
         //fclose(ofp);
         exit(1);
     } else /*if (elementCount(fp) == 81)*/ {
-        for (int i = 0; i < 9; i++) {
-            for (int j = 0; j < 9; j++) {
+        for (int i = 0; i < boardSize; i++) {
+            for (int j = 0; j < boardSize; j++) {
                 fscanf(fp, "%d", &grid[i][j]);
             }
         }
@@ -77,36 +102,64 @@ void solutionPrint() {
     int countAcross = 0;
     //int countDown = 0;
 
-    fprintf(ofp, "The Solution of the Sudoku Puzzle is: \n");
-    fprintf(ofp, "\n+-----------+-----------+-----------+\n");
-    for (int row = 0; row < 9; row++) {
-        fprintf(ofp, "|");
-        for (int column = 0; column < 9; column++) {
-            // countDown++;
-            // if (countDown == 3 || countDown == 6 || countDown == 9) {
-            //     fprintf(ofp, " %d |", table[row][column]);
-            // }else {
-                fprintf(ofp, " %d |", table[row][column]);
-            //}
+    if (boardSize == 9) {
+        fprintf(ofp, "The Solution of the Sudoku Puzzle is: \n");
+        fprintf(ofp, "\n+-----------+-----------+-----------+\n");
+        for (int row = 0; row < boardSize; row++) {
+            fprintf(ofp, "|");
+            for (int column = 0; column < boardSize; column++) {
+                // countDown++;
+                // if (countDown == 3 || countDown == 6 || countDown == 9) {
+                //     fprintf(ofp, " %d |", table[row][column]);
+                // }else {
+                    fprintf(ofp, " %d |", table[row][column]);
+                //}
+            }
+            //countDown = 0;
+            countAcross++;
+            if (countAcross == 3 || countAcross == 6) {
+                fprintf(ofp, "\n|===========#===========#===========|");
+            }else if (countAcross != 9){
+                fprintf(ofp, "\n|---+---+---|---+---+---|---+---+---|");
+            }
+            fprintf(ofp, "\n");
         }
-        //countDown = 0;
-        countAcross++;
-        if (countAcross == 3 || countAcross == 6) {
-            fprintf(ofp, "\n|===========#===========#===========|");
-        }else if (countAcross != 9){
-            fprintf(ofp, "\n|---+---+---|---+---+---|---+---+---|");
+        fprintf(ofp, "+-----------+-----------+-----------+\n");
+        fclose(ofp);
+        system(save);
+        exit(1);
+    }else {
+        fprintf(ofp, "The Solution of the Sudoku Puzzle is: \n");
+        fprintf(ofp, "\n+-------------------+-------------------+-------------------+-------------------+\n");
+        for (int row = 0; row < boardSize; row++) {
+            fprintf(ofp, "|");
+            for (int column = 0; column < boardSize; column++) {
+                // countDown++;
+                // if (countDown == 3 || countDown == 6 || countDown == 9) {
+                //     fprintf(ofp, " %d |", table[row][column]);
+                // }else {
+                    fprintf(ofp, " %02d |", table[row][column]);
+                //}
+            }
+            //countDown = 0;
+            countAcross++;
+            if (countAcross == 4 || countAcross == 8 || countAcross == 12) {
+                fprintf(ofp, "\n|===================#===================#===================#===================|");
+            }else if (countAcross != 16){
+                fprintf(ofp, "\n|----+----+----+----|----+----+----+----|----+----+----+----|----+----+----+----|");
+            }
+            fprintf(ofp, "\n");
         }
-        fprintf(ofp, "\n");
+        fprintf(ofp, "+-------------------+-------------------+-------------------+-------------------+\n");
+        fclose(ofp);
+        system(save);
+        exit(1);
     }
-    fprintf(ofp, "+-----------+-----------+-----------+\n");
-    fclose(ofp);
-    system(save);
-    exit(1);
 }
 
 // Checks if no conflict in rows
 bool rowCheck(int row, int n) {
-    for(int column = 0; column < 9; column++) {
+    for(int column = 0; column < boardSize; column++) {
         if(table[row][column] == n) {
             return false; // if number is already found in the row
         }
@@ -116,7 +169,7 @@ bool rowCheck(int row, int n) {
 
 // Checks if no conflict column
 bool columnCheck(int column, int num) {
-    for(int row = 0; row < 9; row++) {
+    for(int row = 0; row < boardSize; row++) {
         if(table[row][column] == num) {
             return false; // if number is already found in the column
         }
@@ -126,10 +179,10 @@ bool columnCheck(int column, int num) {
 
 // Checks if no conflict in a 3x3 box
 bool boxCheck(int row, int column, int n) {
-    row = ((row / 3) * 3) ;
-    column = (column / 3) * 3;
-    for(int r = 0; r < 3; r++) {
-        for(int c = 0; c < 3; c++) {
+    row = ((row / subBoard) * subBoard) ;
+    column = (column / subBoard) * subBoard;
+    for(int r = 0; r < subBoard; r++) {
+        for(int c = 0; c < subBoard; c++) {
             if (table[row + r][column + c] == n) {
                 return false; // if number is already found in the 3x3 grid
             }
@@ -140,7 +193,7 @@ bool boxCheck(int row, int column, int n) {
 
 // Move to next cell when its filled already
 void nextCell(int row, int column) {
-    if(column < 8) {
+    if(column < (boardSize - 1)) {
         solveSudoku(row, (column + 1));
     }else {
         solveSudoku((row + 1), 0);
@@ -149,13 +202,13 @@ void nextCell(int row, int column) {
 
 // Solution for the puzzle by Backtracking
 void solveSudoku(int row, int column) {
-    if (row == 9) { // Means that all cells are filled
+    if (row == boardSize) { // Means that all cells are filled
         solutionPrint();
     }
     if (table[row][column] != 0) { // If a cell is not a zero, it means we have to move to the next cell
         nextCell(row, column);
     }else {
-        for (int counter = 1; counter <= 9; counter++) { // Checks if numbers 1-9 can be put on a cell
+        for (int counter = 1; counter <= boardSize; counter++) { // Checks if numbers 1-9 can be put on a cell
             if ((rowCheck(row, counter) == true) && (columnCheck(column, counter) == true) && (boxCheck(row, column, counter) == true)) { // If looks promising
                 table[row][column] = counter; // Make tentative assignment
                 nextCell(row, column);
