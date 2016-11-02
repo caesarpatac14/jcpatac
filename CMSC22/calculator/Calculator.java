@@ -633,7 +633,4 @@ public class Calculator extends JFrame {
         calculator.setLocationRelativeTo(null);
         calculator.setVisible(true);
     }
-
-    //FIXME needs to add multiple operation
-
 }
