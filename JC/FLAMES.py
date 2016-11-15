@@ -117,4 +117,3 @@ def fortune(name_1, name_2):
 # print(fortune("Seth James", "Riley King")) # expect Admiration
 # print(fortune("David Jabbs", "Jynx Ward")) # expect Marriage
 # print(fortune("Chris Young", "Hanna Forde")) # expect Enemies
-print(fortune("John Caesar Patac", "Edin Bernice Adolfo")) # expect Soulmate
